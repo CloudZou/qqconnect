@@ -1,0 +1,83 @@
+buildscript {
+    ext {
+        NexusReleases = nexusRoot + "/repository/maven-public"
+        NexusUpload = nexusRoot + "/repository/maven-releases"
+        NexusUploadSnapshots = nexusRoot + "/repository/maven-snapshots"
+        junitJupiterVersion = '5.3.+'
+    }
+
+    repositories {
+        maven {
+            url NexusReleases
+        }
+    }
+}
+
+plugins {
+  id "net.ltgt.errorprone" version "0.6"
+}
+apply plugin: 'jacoco'
+apply plugin: 'maven'
+apply plugin: 'java-library'
+
+sourceCompatibility = 1.8
+group = 'com.github.jarod'
+archivesBaseName = 'qqconnect'
+version = "${version}"
+
+jacoco {
+    toolVersion = "0.8.2"
+}
+
+repositories {
+    maven {
+        url NexusReleases
+    }
+}
+
+dependencies {
+    def Slf4jVersion = "1.7.+"
+    api(
+        "com.squareup.okhttp3:okhttp:3.+",
+        "com.fasterxml.jackson.core:jackson-databind:2.+",
+    )
+    errorprone 'com.google.errorprone:error_prone_core:2.3.2'
+    errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
+    testImplementation(
+        "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}",
+        "org.mockito:mockito-core:2.+"
+    )
+    testRuntimeOnly(
+        "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}",
+    )
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags 'slow'
+    }
+}
+
+task packageJavadoc(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives(packageJavadoc) {
+        type = 'javadoc'
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: NexusUpload) {
+                authentication(userName: nexusUser, password: nexusPasswd)
+            }
+            snapshotRepository(url: NexusUploadSnapshots) {
+                authentication(userName: nexusUser, password: nexusPasswd)
+            }
+        }
+    }
+}
