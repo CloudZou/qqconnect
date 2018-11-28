@@ -8,3 +8,4 @@ build/
 *.iml
 \out
 .vscode/
+gradle2.properties
