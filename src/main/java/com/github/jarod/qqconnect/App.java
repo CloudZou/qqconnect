@@ -38,12 +38,16 @@ public class App {
     }
 
     public TokenResult requestToken(String code) {
+        String encodedRedirectUrl;
         try {
-            String encodedRedirectUrl = URLEncoder.encode(redirectUrl, "UTF-8");
-            Request request = new Request.Builder().get().url(String.format(
-                    "%s/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s",
-                    GRAPH_BASE, appId, appKey, code, encodedRedirectUrl)).build();
-            Response response = httpClient.newCall(request).execute();
+            encodedRedirectUrl = URLEncoder.encode(redirectUrl, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            encodedRedirectUrl = redirectUrl;
+        }
+        Request request = new Request.Builder().get().url(String.format(
+                "%s/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s",
+                GRAPH_BASE, appId, appKey, code, encodedRedirectUrl)).build();
+        try (Response response = httpClient.newCall(request).execute()) {
             return TokenResult.parseFromResponse(response.body().string());
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -51,10 +55,9 @@ public class App {
     }
 
     public OpenIDResult requestOpenID(String accessToken) {
-        try {
-            Request request = new Request.Builder().get()
-                    .url(String.format("%s/oauth2.0/me?access_token=%s", GRAPH_BASE, accessToken)).build();
-            Response response = httpClient.newCall(request).execute();
+        Request request = new Request.Builder().get()
+                .url(String.format("%s/oauth2.0/me?access_token=%s", GRAPH_BASE, accessToken)).build();
+        try (Response response = httpClient.newCall(request).execute()) {
             return OpenIDResult.parseFromResponse(response.body().string());
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -70,8 +73,7 @@ public class App {
         String url = String.format("%s/user/get_user_info?access_token=%s&oauth_consumer_key=%s&openid=%s", GRAPH_BASE,
                 accessToken, appId, openID);
         Request request = new Request.Builder().get().url(url).build();
-        try {
-            Response response = httpClient.newCall(request).execute();
+        try (Response response = httpClient.newCall(request).execute()) {
             return Helper.json().readValue(response.body().byteStream(), UserInfoResult.class);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
