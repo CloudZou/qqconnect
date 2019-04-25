@@ -17,14 +17,14 @@ public class App {
     private final String appId;
     private final String appKey;
     private final String redirectUrl;
-    private String scope = "all";
+    private String scope = "get_user_info";
+    private boolean applyUnionID = false;
     private final OkHttpClient httpClient = new OkHttpClient();
 
     public App(String appId, String appKey, String redirectUrl) {
         this.appId = appId;
         this.appKey = appKey;
         this.redirectUrl = redirectUrl;
-
     }
 
     public String getAuthorizeURL() {
@@ -55,18 +55,13 @@ public class App {
     }
 
     public OpenIDResult requestOpenID(String accessToken) {
-        Request request = new Request.Builder().get()
-                .url(String.format("%s/oauth2.0/me?access_token=%s", GRAPH_BASE, accessToken)).build();
+        Request request = new Request.Builder().get().url(String.format("%s/oauth2.0/me?access_token=%s&unionid=%d",
+                GRAPH_BASE, accessToken, applyUnionID ? 1 : 0)).build();
         try (Response response = httpClient.newCall(request).execute()) {
             return OpenIDResult.parseFromResponse(response.body().string());
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    public App setScope(String scope) {
-        this.scope = scope;
-        return this;
     }
 
     public UserInfoResult requestUserInfo(String accessToken, String openID) {
@@ -78,6 +73,27 @@ public class App {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
 
+    /**
+     * @see <a href=
+     *      "http://wiki.connect.qq.com/api%E5%88%97%E8%A1%A8">API列表</a>
+     */
+    public App setScope(String scope) {
+        this.scope = scope;
+        return this;
+    }
+
+    public boolean isApplyUnionID() {
+        return applyUnionID;
+    }
+
+    /**
+     * @see <a href=
+     *      "http://wiki.connect.qq.com/unionid%E4%BB%8B%E7%BB%8D">UnionID介绍</a>
+     */
+    public App setApplyUnionID(boolean applyUnionID) {
+        this.applyUnionID = applyUnionID;
+        return this;
     }
 }

@@ -3,7 +3,7 @@ buildscript {
         NexusReleases = nexusRoot + "/repository/maven-public"
         NexusUpload = nexusRoot + "/repository/maven-releases"
         NexusUploadSnapshots = nexusRoot + "/repository/maven-snapshots"
-        junitJupiterVersion = '5.3.+'
+        junitJupiterVersion = '5.4.+'
     }
 
     repositories {
@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-  id "net.ltgt.errorprone" version "0.6"
+  id "net.ltgt.errorprone" version "0.8"
 }
 apply plugin: 'jacoco'
 apply plugin: 'maven'
@@ -24,10 +24,6 @@ sourceCompatibility = 1.8
 group = 'com.github.jarod'
 archivesBaseName = 'qqconnect'
 version = "${version}"
-
-jacoco {
-    toolVersion = "0.8.2"
-}
 
 repositories {
     maven {
@@ -41,7 +37,7 @@ dependencies {
         "com.squareup.okhttp3:okhttp:3.+",
         "com.fasterxml.jackson.core:jackson-databind:2.+",
     )
-    errorprone 'com.google.errorprone:error_prone_core:2.3.2'
+    errorprone 'com.google.errorprone:error_prone_core:2.3.3'
     errorproneJavac("com.google.errorprone:javac:9+181-r4173-1")
     testImplementation(
         "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}",

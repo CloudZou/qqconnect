@@ -10,31 +10,32 @@ public class OpenIDResult {
 
     public static OpenIDResult parseFromResponse(String response) {
         OpenIDResult r = new OpenIDResult();
-        if (response.indexOf("callback") != -1) {
-            String jsonStr = response.substring(response.indexOf("{"), response.indexOf("}") + 1);
-            try {
-                r.value = Helper.json().readValue(jsonStr, HashMap.class);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            r.value = Helper.parseURLResponse(response);
+        String jsonStr = response.substring(response.indexOf("{"), response.indexOf("}") + 1);
+        try {
+            r.value = Helper.json().readValue(jsonStr, HashMap.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return r;
     }
 
-    public int code() {
-        return Integer.parseInt(value.getOrDefault("code", "0"));
+    public int error() {
+        return Integer.parseInt(value.getOrDefault("error", "0"));
     }
 
-    public String msg() {
-        return value.getOrDefault("msg", "");
+    public String errorDescription() {
+        return value.getOrDefault("error_description", "");
     }
 
     public String getOpenID() {
         return value.get("openid");
     }
 
+    public String getUnionID() {
+        return value.get("unionid");
+    }
+
+    @Override
     public String toString() {
         if (value == null) {
             return "";
