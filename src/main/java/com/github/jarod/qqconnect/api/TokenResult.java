@@ -33,6 +33,7 @@ public class TokenResult {
         return value.get("refresh_token");
     }
 
+    @Override
     public String toString() {
         if (value == null) {
             return "";
