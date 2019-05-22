@@ -5,32 +5,36 @@ import java.util.Map;
 import com.github.jarod.qqconnect.internal.Helper;
 
 public class TokenResult {
-    private Map<String, String> value;
+    private Map<String, Object> value;
 
     public static TokenResult parseFromResponse(String response) {
         TokenResult r = new TokenResult();
-        r.value = Helper.parseURLResponse(response);
+        r.value = Helper.parseResponse(response);
         return r;
     }
 
-    public int code() {
-        return Integer.parseInt(value.getOrDefault("code", "0"));
+    public int error() {
+        return (Integer) value.getOrDefault("error", 0);
+    }
+
+    public String errorDescription() {
+        return (String) value.getOrDefault("error_description", "");
     }
 
     public String msg() {
-        return value.getOrDefault("msg", "");
+        return (String) value.getOrDefault("msg", "");
     }
 
     public String accessToken() {
-        return value.get("access_token");
+        return (String) value.get("access_token");
     }
 
     public int expiresIn() {
-        return Integer.parseInt(value.getOrDefault("expires_in", "0"));
+        return (Integer) value.getOrDefault("expires_in", 0);
     }
 
     public String refreshToken() {
-        return value.get("refresh_token");
+        return (String) value.get("refresh_token");
     }
 
     @Override

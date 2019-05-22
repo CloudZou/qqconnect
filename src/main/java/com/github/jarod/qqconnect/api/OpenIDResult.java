@@ -1,38 +1,32 @@
 package com.github.jarod.qqconnect.api;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.github.jarod.qqconnect.internal.Helper;
 
 public class OpenIDResult {
-    private Map<String, String> value;
+    private Map<String, Object> value;
 
     public static OpenIDResult parseFromResponse(String response) {
         OpenIDResult r = new OpenIDResult();
-        String jsonStr = response.substring(response.indexOf("{"), response.indexOf("}") + 1);
-        try {
-            r.value = Helper.json().readValue(jsonStr, HashMap.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        r.value = Helper.parseCallbackResponse(response);
         return r;
     }
 
     public int error() {
-        return Integer.parseInt(value.getOrDefault("error", "0"));
+        return (Integer) value.getOrDefault("error", 0);
     }
 
     public String errorDescription() {
-        return value.getOrDefault("error_description", "");
+        return (String) value.getOrDefault("error_description", "");
     }
 
     public String getOpenID() {
-        return value.get("openid");
+        return (String) value.get("openid");
     }
 
     public String getUnionID() {
-        return value.get("unionid");
+        return (String) value.get("unionid");
     }
 
     @Override
