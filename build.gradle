@@ -3,7 +3,7 @@ buildscript {
         NexusReleases = nexusRoot + "/repository/maven-public"
         NexusUpload = nexusRoot + "/repository/maven-releases"
         NexusUploadSnapshots = nexusRoot + "/repository/maven-snapshots"
-        junitJupiterVersion = '5.4.+'
+        junitJupiterVersion = '5.5.+'
     }
 
     repositories {
@@ -14,7 +14,7 @@ buildscript {
 }
 
 plugins {
-  id "net.ltgt.errorprone" version "0.8"
+  id "net.ltgt.errorprone" version "0.8.1"
 }
 apply plugin: 'jacoco'
 apply plugin: 'maven'
